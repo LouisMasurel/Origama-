@@ -11,8 +11,8 @@ addEventListener('resize', () => {
     init()
 })
 
-addEventListener('keydown', () => {
-    userPressedKey = true
+addEventListener('foodAssimilation', () => {
+  hasAssimilated = true
     setTimeout(function(){
         userPressedKey = false
     }, 15)
@@ -24,7 +24,7 @@ addEventListener('keydown', () => {
 
 // Objects
 function Particule (radius, distance, velocity, radian, color, name) {
-    x = canvas.width/2;
+    x = canvas.width/2 ;
     y = canvas.height/2;
     this.x = x;    
     this.y = y;
@@ -53,20 +53,15 @@ function Particule (radius, distance, velocity, radian, color, name) {
 
 // Implementation
 
-var R = (2.0*Math.PI)/360 
-var t = innerHeight / 7
-var s = innerHeight / 250 
-var v = 0.0002
+var R = (2.0*Math.PI)/360;
+var t = innerHeight/2-70;
+var s = innerHeight / 150;
+var v = 0.0002;
 
-var userPressedKey = false;
-
-var particules ;
+var allParticules ;
 function init() {
-    particules = [
-
-  
+  allParticules = [
                          // radius, distance, velocity, radian:x*(2.0*Math.PI)/360, color, class, name
-        
         new Particule (p=(s*2), m=(t*1/10), w = -(v+0.0006), 0, purple = 'grey', 'purple'),
         new Particule (p, m, w, (360/3)*R, purple, 'purple'),
         new Particule (p, m, w, (360/3*2)*R, purple, 'purple'),
@@ -148,7 +143,7 @@ function animate() {
     requestAnimationFrame(animate)
     c.fillStyle = 'rgba (255, 255, 255, 0,05)';
     c.clearRect(0, 0, canvas.width, canvas.height);
-    particules.forEach(particule => {
+    allParticules.forEach(particule => {
     particule.update();
      });
     }
@@ -178,12 +173,10 @@ function Pipe (myX, myY, myW, myH, color) {
     c.fillRect(this.x, this.y, this.width, this.height, this.color);
   };
 
-var t = innerHeight / 5
-var p = 20
-var g = 5
 
 var allPipes = [
-    new Pipe (innerWidth/2-((t/p)/2), (innerHeight/2-(t+(2*g)))+(innerHeight/7), t/p, t+t/(2*g), 'brown'),
+  new Pipe (((innerWidth/2)-2.5), 65, 5, (innerHeight/2-65), 'brown'),
+  new Pipe ((innerWidth/2-15),(innerHeight-30), 30, 10, 'brown')
 ];
 
 // ----- collision pipe and particule ----- //
@@ -204,10 +197,10 @@ var allPipes = [
            getLeft(objA)   <= getRight(objB);
   }
   
-  function pipeCollision (particule) {
+  function pipeCollision (Particule) {
     var hasCollided = false;
   
-      if (collision(particule, allPipes[0])) {
+    if (collision(Particule, allPipes[0])) {
         hasCollided = true;
       }
     return hasCollided;
@@ -217,15 +210,20 @@ var allPipes = [
 
 //----- creat FOOD  ----- //
 var food = 0 
-function Food (otherX, otherY, radius, color) {
-    this.x = otherX;
-    this.y = otherY;
+function Food (radius, color) {
+    this.x = null;
+    this.y = null;
+    this.speed = 1;
     this.radius = radius;
     this.color = color;
+    this.creation();
+    this.clearFood();
+}
     
   Food.prototype.drawMe = function () {
     c.beginPath()
     c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false)
+    this.y += this.speed;
     c.fillStyle = this.color,
     c.fill();
     c.closePath();
@@ -233,145 +231,123 @@ function Food (otherX, otherY, radius, color) {
     
   Food.prototype.clearFood = function () {
      c.beginPath();
-     c.clearRect(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+     c.clearRect(this.x, innerHeight-((innerHeight/7)/2), this.radius, 0, Math.PI * 2, false);
      c.closePath();
     };
   
   Food.prototype.creation = function () {
-    this.x = Math.floor(Math.random() * (canvas.width-70)) 
-      if  (((canvas.width/2) - (innerWidth/7)) < this.x< ((canvas.width/2) + (innerWidth/7))) {return creation}; 
-
-    this.y = Math.floor(Math.random() * (canvas.height-70))
-      if ( ((canvas.height/2) - (innerHeight/7)) < this.y < ((canvas.height/2) + (innerHeight/7))) {return creation}  
-    } 
+    this.y = 30; 
+    this.x = Math.floor(Math.random() * (canvas.width-(innerHeight/7)))
+       if ((innerHeight/7) > this.x) {
+        this.creation();
+        return;
+        };   
+      };
 
 var N = innerHeight / 100 
 
 var allFoods = [
-    new Food (otherX, otherY, N, 'purple'),
-    new Food (otherX, otherY, N, 'green'),
-    new Food (otherX, otherY, N, 'grey'),
-    new Food (otherX, otherY, N, 'blue'),
-    new Food (otherX, otherY, N, 'turquoise'),
-    new Food (otherX, otherY, N, 'red'),
-    new Food (otherX, otherY, N, 'redSeconde'),
-    new Food (otherX, otherY, N, 'yellow'),
+    new Food (N, 'purple'),
+    new Food (N, 'green'),
+    new Food (N, 'grey'),
+    new Food (N, 'blue'),
+    new Food (N, 'turquoise'),
+    new Food (N, 'red'),
+    new Food (N, 'redSeconde'),
+    new Food (N, 'yellow'),
 ];
 
 
-
- // ----- NOTE ----- //
-
- // ----- création NOTE ----- //
-
- var allNotes = new Note();
- allNotes.src = "./imagesetsons/imaautocollant-mural-notes-musique-couleur-820.png";
-
- var Note = {
-   x: 70,
-   y: 70,
-   width: 100,
-   height: auto,
-
-   drawMe: function () {
-     c.drawMe(allNotes, this.x, this.y, this.width, this.height);
-   }
- };
-
-
-//----- mouvement and limite of NOTE by button Arrow ----- //
+//----- mouvement and limite of Pipe and particules by button Arrow ----- //
 
    var body = document.querySelector("body");
    body.onkeydown = function () {
-  
+
     switch (event.keyCode) {
-      case 87: // W key (90 for French keyboards)
-      case 38: // up arrow
-      if (note.y < 5){note.y += 5}  
-      if ( ((canvas.height/2) - (innerHeight/7)) < note.y < ((canvas.height/2) + (innerHeight/7))) {note.y += 5}  
-        note.y -= 5;         
-        break;
-  
-      case 65: // A key (81 for French keyboards)
-      case 37: // left arrow
-      if (note.x < 5){note.y += 5} 
-      if ( ((canvas.width/2) - (innerWidth/7)) < note.y < ((canvas.width/2) + (innerWidth/7))) {note.y += 5}  
-        note.x -= 5;
-        break;
-  
-      case 83: // S key
-      case 40: // down arrow
-      if (note.y > (canvas.height - 5)){note.y -= 5} 
-      if ( ((canvas.height/2) - (innerHeight/7)) < note.y < ((canvas.height/2) + (innerHeight/7))){note.y -= 5}  
-        note.y += 5;
+      case 65 : // A key (81 for French keyboards)
+      case 37 : // left arrow
+        allPipes.forEach(function (Pipe) {
+          allPipes[1].x -= 5});
         break;
   
       case 68: // D key
       case 39: // right arrow
-      if (note.x > (canvas.width - 5)){note.y -= 5}
-      if ( ((canvas.width/2) - (innerWidth/7)) < note.y < ((canvas.width/2) + (innerWidth/7))) {note.y -= 5}  
-      note.x += 5
+        allPipes.forEach(function (Pipe) {
+          allPipes[1].x += 5});    
         break;
-    };
-  }
-   
+        }
+      };
 
-  // ----- assimilation NOTE and food ----- //
+   
+  // ----- assimilation Pipe and food ----- //
+
 
 function getTopSecond (obj) {
-  return obj.y;
-}
+  if(obj.width) {
+    return obj.x + obj.width
+  } else {
+    return obj.x + obj.radius;
+  }
+};
 function getBottomSecond (obj) {
-  return obj.y + obj.height;
-}
-function getLeftSecond (obj) {
-  return obj.x;
-}
-function getRightSecond (obj) {
-  return obj.x + obj.width;
-}
+  if(obj.width) {
+    return obj.x + obj.width
+  } else {
+    return obj.x + obj.radius;
+  }
+};
 
 function assimilation (objA, objB) {
   return getBottomSecond(objA) >= getTopSecond(objB)    &&
-         getTopSecond(objA)    <= getBottomSecond(SecondobjB) &&
-         getRightSecond(objA)  >= getLeftSecond(objB)   &&
-         getLeftSecond(objA)   <= getRightSecond(objB);
-}
+         getTopSecond(objA)    <= getTopSecond(objB) 
+};
   
-  function noteAssimilation (food) {
+  function foodAssimilation (Food) {
     var hasAssimilated = false;
-  
-      if (assimilation(food, allNotes[0])) {
-        hasAssimilated = true;
+    console.log(Food)
+    
+    if (assimilation(Food, allPipes[1])===true) {
+      hasAssimilated = true;
+        Food.clearRect();
+        return hasAssimilated;
       }
-      Food.clearRect;
-    return hasAssimilated;
+    return Food.color;
   }
- 
   
+  console.log(foodAssimilation(allFoods[2]))    
   // ----- update action ----- // 
+  // allFoods.forEach(function foodAssimilation (Food){
+  //   var hasAssimilated = false;
+  //   if (assimilation(Food, allPipes[1])===true) {
+  //     console.log("ok")
+  //       hasAssimilated = true;
+  //       Food.clearRect();
+  //       return hasAssimilated;
+  //     }
+  // })
 
 function updateStuff () {
     // clear old drawings from the entire canvas before drawing again
-    
-    note.drawMe();
-
     allPipes.forEach(function (Pipe) {
       Pipe.drawMe();
+    });
+
+    allParticules.forEach(function (Particule) {
+      Particule.draw();
     });
 
     if (food === 0) {
         var index = Math.floor(Math.random() * allFoods.length) 
         allFoods[index].drawMe()
         }
-    allFoods.forEach(function (Food) {
-            Food.drawMe();
-          });
+        allFoods.forEach(function (Food) {
+          Food.drawMe();
+        });
 
 
-    // ----- activate Particules ----- //
+ // ----- activate Particules ----- //
 
-    // if particules.forEach(function(p) {
+    //  allParticules.forEach(function(p) {
     //   (pipeCollision(p) === true
     // && if 
     // noteAssimilation(p) 
@@ -381,7 +357,6 @@ function updateStuff () {
     //     }
     // })
 
-    // update again as soon as the browser will allow
     requestAnimationFrame(function () {
       updateStuff();
     });
@@ -390,6 +365,39 @@ function updateStuff () {
  
  updateStuff();
 
-
-}
 // ----- RESET ----- //
+
+
+// ----- trash ----- //
+
+
+
+      // if  (((canvas.width/2) - (innerWidth/7)-5) < this.x && this.x < ((canvas.width/2) + (innerWidth/7)+5)) {
+      //   this.creation();
+      //   return;
+      // }; 
+
+          
+    // Math.floor(Math.random() * (canvas.height-70))
+    //   if ( ((canvas.height/2) - (innerHeight/7) -5) < this.y && this.y < ((canvas.height/2) + (innerHeight/7)+5)) {
+    //     this.creation();
+    //     return;
+
+
+    //  // ----- création NOTE ----- //
+
+//  var allNotes = new Image();
+//  allNotes.src = "./imagesetsons/autocollant-mural-notes-musique-couleur-820.png";
+
+//  var note = {
+//    x: (innerWidth/2-(innerHeight/10)/2),
+//    y: 50,
+//    width: innerHeight/10,
+//    height: innerHeight/10,
+
+//    drawMe: function () {
+//      c.drawImage(allNotes, this.x, this.y, this.width, this.height);
+//    }
+//  };
+
+//    note.drawMe();
