@@ -235,7 +235,7 @@ var food = 0
 function Food (radius, color, song) {
     this.x = 1;
     this.y = 1;
-    this.speed = 1;
+    this.speed = 1.5;
     this.radius = radius;
     this.color = color;
     this.song = song;
@@ -292,7 +292,7 @@ randomFoods();
 
 setInterval(function () {
   randomFoods();
-}, 500);
+}, 700);
 
 
 //----- mouvement and limite of Pipe and particules by button Arrow ----- //
@@ -368,7 +368,7 @@ function assimilation (objA, objB) {
 function randomFoods () {
   var allFoodsCopy = allFoods.slice();
 
-  for (var i = 1; i <= 1; i +=1) {
+  for (var i = 1; i <= 2; i +=1) {
     var index = Math.floor(Math.random() * allFoodsCopy.length);
     movingFoods.push(new Food(N, allFoodsCopy[index].color, allFoodsCopy[index].song));
     allFoodsCopy.splice(index, 1);
